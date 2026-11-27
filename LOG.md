@@ -74,3 +74,8 @@ configuration, to who approved what, and to a private repository); no recorded d
 `scripts/make_readme_figure.py`, which draws `docs/figures/pilot_results.png` from
 `results/asymmetry_true_wrong_dev.csv` and `results/reader_summary_dev.csv`, and a short key-findings section with
 that figure at the top of `README.md`. Added `matplotlib` to `requirements.txt`. No experiment was run.
+
+**README numbers, later the same day.** The key-findings section of `README.md` now opens with a one-line setup
+and states the headline numbers in percentage points, as computed from `results/asymmetry_true_wrong_dev.csv`
+and `results/reader_summary_dev.csv`; both computations use the same 97 development questions. No experiment was
+run and no result changed.

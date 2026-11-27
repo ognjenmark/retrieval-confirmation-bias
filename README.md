@@ -13,14 +13,18 @@ been tested. Results below are exploratory and may change on the test set.
 
 ## Key findings so far
 
+BrowseComp-Plus, 97 development questions with a wrong candidate; BM25 retrieval, Qwen3-4B reader; 95% paired
+bootstrap intervals over questions.
+
 - **Retrieval does not visibly "echo" the wrong answer (H1 not supported).** Adding a plausible wrong candidate to
-  a BM25 query barely changes recall of the documents that contain the correct answer, although documents that
-  mention the wrong candidate rise in the top 10.
-- **Strong asymmetry (H2).** Adding the correct answer raises gold recall by 0.29 to 0.47 (depending on k and on
-  pool vs full corpus); adding a wrong one changes it by at most 0.015 either way.
-- **The reader is swayed (H4).** A small LLM judges the wrong candidate SUPPORTED more often after reading results
-  of a query that contains it. A control suggests about half of this comes from the retrieved documents and half
-  from snippets chosen by the candidate-bearing query.
+  a BM25 query changes recall of the documents that contain the correct answer by at most 1.5 percentage points,
+  although documents that mention the wrong candidate rise in the top 10.
+- **Strong asymmetry (H2).** Adding the correct answer raises gold recall by 28.7 to 47.0 percentage points
+  (depending on k and on pool vs full corpus).
+- **The reader is swayed (H4).** The reader judges the wrong candidate SUPPORTED for 21.6% of questions after
+  reading results of a query that contains it, against 7.2% after a neutral keyword query (+14.4 percentage points,
+  95% CI 6.2 to 22.7). A control suggests about half of this comes from the retrieved documents and half from
+  snippets chosen by the candidate-bearing query.
 
 ![Pilot results](docs/figures/pilot_results.png)
 
