@@ -1,10 +1,10 @@
 ## 2026-11-04
 
-**Run.** Inspected `slivovitz-raman` read-only and adopted its code and git conventions. Initialized git and created the private GitHub repository `ognjenmark/retrieval-confirmation-bias`. Created the conda environment `retrieval-bias` (Python 3.11.18; pandas 3.1.0, numpy 2.4.6, datasets 5.1.0, huggingface_hub 2.4.0, bm25s 0.3.16, jupyter). Downloaded the obfuscated BrowseComp-Plus parquet files into `data/browsecomp-plus/`: `Tevatron/browsecomp-plus` at revision `144cff8e35b5eaef7e526346aa60774a9deb941f` and `Tevatron/browsecomp-plus-corpus` at revision `b27b02bc3e45511b8b82a13e6f90ce761df726f6`.
+**Run.** Adopted the code and git conventions of an earlier project of the author. Initialized git and created the private GitHub repository `ognjenmark/retrieval-confirmation-bias`. Created the conda environment `retrieval-bias` (Python 3.11.18; pandas 3.1.0, numpy 2.4.6, datasets 5.1.0, huggingface_hub 2.4.0, bm25s 0.3.16, jupyter). Downloaded the obfuscated BrowseComp-Plus parquet files into `data/browsecomp-plus/`: `Tevatron/browsecomp-plus` at revision `144cff8e35b5eaef7e526346aa60774a9deb941f` and `Tevatron/browsecomp-plus-corpus` at revision `b27b02bc3e45511b8b82a13e6f90ce761df726f6`.
 
 **Found.** Parquet metadata reports 830 rows in the queries dataset and 100195 rows in the corpus, matching the dataset cards. No data was de-obfuscated and no results were computed.
 
-**Decided.** Local editor and tool configuration files are excluded through `.git/info/exclude`, as in `slivovitz-raman`. The unmerged `harness` branch of `slivovitz-raman` is ignored as a source of conventions. `notebooks/01_pilot.ipynb` was started afterwards, as logged below.
+**Decided.** Local editor and tool configuration files are excluded through `.git/info/exclude`. `notebooks/01_pilot.ipynb` was started afterwards, as logged below.
 
 **Notebook, same day.** Fixed the split in `results/split.json` (100 development, 730 test, seed 0) before computing any result. Decrypted the development questions only. Ran BM25 with q0 inside each question's pool (`results/bm25_q0_dev.csv`). On development questions BM25 with q0 is not distinguishable from a random ranking; see the notebook output for the numbers and intervals. Read sections 3.2-3.3 of arXiv 2508.06600: gold documents are human-labeled as containing the final answer, possibly implicitly; evidence was gathered with the answer known to the model; negatives were mined from sub-queries of the question. Open: the claim that a gold document refutes a wrong candidate is our inference and is not stated in those sections, and the pool design may bias q_true and q_wrong. No measurement was changed.
 
@@ -70,7 +70,7 @@ with limitations, reproduction steps, data policy) and an MIT `LICENSE`. The REA
 **Open.** Manual labels, the test run and the dense retriever are unchanged from 2026-11-17.
 
 **Repository, later the same day.** Reworded earlier log entries for a public reader (references to local tool
-configuration and to who approved what); no recorded decision, run or result was changed. Added
+configuration, to who approved what, and to a private repository); no recorded decision, run or result was changed. Added
 `scripts/make_readme_figure.py`, which draws `docs/figures/pilot_results.png` from
 `results/asymmetry_true_wrong_dev.csv` and `results/reader_summary_dev.csv`, and a short key-findings section with
 that figure at the top of `README.md`. Added `matplotlib` to `requirements.txt`. No experiment was run.
