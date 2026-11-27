@@ -57,3 +57,14 @@
 **Found, development questions.** The snippet control splits the H4 difference in SUPPORTED into two parts of about equal size, one from the q_wrong documents and one from windows chosen by q_wrong. Both intervals exclude zero but come close to it, with 97 questions and without multiple-comparison correction, so the split is suggestive. The main H4 result is unchanged. Three q_wrong candidates are shorter than 4 characters. Numbers: notebook output and `results/reader_summary_dev.csv`.
 
 **Open.** Ognjen labels both sheets. If the snippet effect is to be reported, the test run must keep this condition.
+
+## 2026-11-27
+
+**Repository.** With Ognjen's approval, `analysis/pilot-dev` and `analysis/pilot-controls` were fast-forwarded into
+`main` and deleted locally and on GitHub; history stays linear. Before the merge, every blob in the history was
+checked for the BrowseComp-Plus canary GUID and for development answers, candidates, question openings and gold
+URLs; nothing was found. Added `README.md` (question, hypotheses, setup, pilot results on development questions
+with limitations, reproduction steps, data policy) and an MIT `LICENSE`. The README tables were generated from
+`results/reader_summary_dev.csv` and `results/asymmetry_true_wrong_dev.csv`. No experiment was run.
+
+**Open.** Manual labels, the test run and the dense retriever are unchanged from 2026-11-17.
