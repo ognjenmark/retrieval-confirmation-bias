@@ -11,6 +11,22 @@ and standard ranking metrics do not show it. This repository is an empirical stu
 questions (730) have not been run, manual labels are not entered yet, and only a lexical retriever (BM25) has
 been tested. Results below are exploratory and may change on the test set.
 
+## Key findings so far
+
+- **Retrieval does not visibly "echo" the wrong answer (H1 not supported).** Adding a plausible wrong candidate to
+  a BM25 query barely changes recall of the documents that contain the correct answer, although documents that
+  mention the wrong candidate rise in the top 10.
+- **Strong asymmetry (H2).** Adding the correct answer raises gold recall by 0.29 to 0.47 (depending on k and on
+  pool vs full corpus); adding a wrong one changes it by at most 0.015 either way.
+- **The reader is swayed (H4).** A small LLM judges the wrong candidate SUPPORTED more often after reading results
+  of a query that contains it. A control suggests about half of this comes from the retrieved documents and half
+  from snippets chosen by the candidate-bearing query.
+
+![Pilot results](docs/figures/pilot_results.png)
+
+*Left: change in gold recall relative to the neutral keyword query. Right: change in the share of SUPPORTED
+judgments. Drawn by `scripts/make_readme_figure.py` from the files in `results/`.*
+
 ## Hypotheses
 
 - **H1, retrieval echo:** adding a wrong candidate answer to a query lowers recall and rank of documents that
@@ -99,8 +115,9 @@ Source: `results/reader_summary_dev.csv`. Condition names are `<proposed answer>
 
 ```
 notebooks/01_pilot.ipynb   the full pilot, with outputs and a dated summary
-scripts/                   corpus index builder and resumable local LLM runner
+scripts/                   corpus index builder, resumable local LLM runner, README figure
 results/                   saved per-question results and summaries (development questions)
+docs/figures/              figures generated from results/
 LOG.md                     dated log of what was run, found and decided
 ```
 

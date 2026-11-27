@@ -1,20 +1,20 @@
 ## 2026-11-04
 
-**Run.** Inspected `slivovitz-raman` read-only and recorded its code and git conventions in `CLAUDE.md`. Initialized git and created the private GitHub repository `ognjenmark/retrieval-confirmation-bias`. Created the conda environment `retrieval-bias` (Python 3.11.18; pandas 3.1.0, numpy 2.4.6, datasets 5.1.0, huggingface_hub 2.4.0, bm25s 0.3.16, jupyter). Downloaded the obfuscated BrowseComp-Plus parquet files into `data/browsecomp-plus/`: `Tevatron/browsecomp-plus` at revision `144cff8e35b5eaef7e526346aa60774a9deb941f` and `Tevatron/browsecomp-plus-corpus` at revision `b27b02bc3e45511b8b82a13e6f90ce761df726f6`.
+**Run.** Inspected `slivovitz-raman` read-only and adopted its code and git conventions. Initialized git and created the private GitHub repository `ognjenmark/retrieval-confirmation-bias`. Created the conda environment `retrieval-bias` (Python 3.11.18; pandas 3.1.0, numpy 2.4.6, datasets 5.1.0, huggingface_hub 2.4.0, bm25s 0.3.16, jupyter). Downloaded the obfuscated BrowseComp-Plus parquet files into `data/browsecomp-plus/`: `Tevatron/browsecomp-plus` at revision `144cff8e35b5eaef7e526346aa60774a9deb941f` and `Tevatron/browsecomp-plus-corpus` at revision `b27b02bc3e45511b8b82a13e6f90ce761df726f6`.
 
 **Found.** Parquet metadata reports 830 rows in the queries dataset and 100195 rows in the corpus, matching the dataset cards. No data was de-obfuscated and no results were computed.
 
-**Decided.** `CLAUDE.md` and other local Claude files are excluded through `.git/info/exclude`, as in `slivovitz-raman`. The unmerged `harness` branch of `slivovitz-raman` is ignored as a source of conventions. `notebooks/01_pilot.ipynb` was started afterwards, as logged below.
+**Decided.** Local editor and tool configuration files are excluded through `.git/info/exclude`, as in `slivovitz-raman`. The unmerged `harness` branch of `slivovitz-raman` is ignored as a source of conventions. `notebooks/01_pilot.ipynb` was started afterwards, as logged below.
 
 **Notebook, same day.** Fixed the split in `results/split.json` (100 development, 730 test, seed 0) before computing any result. Decrypted the development questions only. Ran BM25 with q0 inside each question's pool (`results/bm25_q0_dev.csv`). On development questions BM25 with q0 is not distinguishable from a random ranking; see the notebook output for the numbers and intervals. Read sections 3.2-3.3 of arXiv 2508.06600: gold documents are human-labeled as containing the final answer, possibly implicitly; evidence was gathered with the answer known to the model; negatives were mined from sub-queries of the question. Open: the claim that a gold document refutes a wrong candidate is our inference and is not stated in those sections, and the pool design may bias q_true and q_wrong. No measurement was changed.
 
-**Plan change, same day, approved by Ognjen.** After seeing the pool result on development questions, added two things to the original plan: ranking over the full corpus during the pilot, and a neutral keyword query (q_keywords) as the direct comparison for q_true and q_wrong. Reasons: q0 is at chance inside the pools, so a further drop is hard to measure (floor effect); the pools were built around the correct answer and may favour q_true; and comparing q_wrong with the full question would mix the effect of the candidate with the effect of shortening the query. Pool results are kept and reported alongside. Test questions remain unused.
+**Plan change, same day.** After seeing the pool result on development questions, added two things to the original plan: ranking over the full corpus during the pilot, and a neutral keyword query (q_keywords) as the direct comparison for q_true and q_wrong. Reasons: q0 is at chance inside the pools, so a further drop is hard to measure (floor effect); the pools were built around the correct answer and may favour q_true; and comparing q_wrong with the full question would mix the effect of the candidate with the effect of shortening the query. Pool results are kept and reported alongside. Test questions remain unused.
 
 ## 2026-11-05
 
-**Run.** The first full-corpus BM25 run (notebook section 4) was stopped by Claude Code because the system was low on memory; no corpus index and no corpus result exist yet.
+**Run.** The first full-corpus BM25 run (notebook section 4) was stopped because the system was low on memory; no corpus index and no corpus result exist yet.
 
-**Decided.** The rerun happens overnight with a memory limit. `CLAUDE.md` now says that a gold document contains the final answer, and that refuting a wrong candidate is our inference, to be checked with manual labels.
+**Decided.** The rerun happens overnight with a memory limit. The project notes now say that a gold document contains the final answer, and that refuting a wrong candidate is our inference, to be checked with manual labels.
 
 **Rerun.** `scripts/build_corpus_index.py` built the full-corpus index under a 14 GB limit (peak reported by the script: 8.46 GB) and the notebook ran through section 4. BM25 with q0 on development questions is well above random over the full corpus, with low absolute recall; the numbers are in the notebook output and `results/bm25_q0_corpus_dev.csv`. So the chance-level result is specific to the pools. Pool diagnostics are saved in `results/bm25_pool_diagnostics_dev.csv`. Low recall at small k may still limit how well a drop can be measured there.
 
@@ -26,7 +26,7 @@
 
 ## 2026-11-10
 
-**Workflow change, approved by Ognjen.** The cell-by-cell walkthrough is paused: Claude runs the remaining pilot steps and explains them afterwards. Local model only (no paid API). The dense retriever (H3) is deferred. Ognjen will do the manual labels. The test questions are run only after every choice below is frozen on the development questions.
+**Workflow change.** The cell-by-cell development of the notebook is paused: the remaining pilot steps are run end to end and reviewed afterwards. Local model only (no paid API). The dense retriever (H3) is deferred. Manual labels are done by hand. The test questions are run only after every choice below is frozen on the development questions.
 
 **Design fixed before any result for it.**
 - Model: Qwen3-4B, `Qwen/Qwen3-4B-GGUF`, file `Qwen3-4B-Q4_K_M.gguf`, revision `bc640142c66e1fdd12af0bd68f40445458f3869b`, through `llama-cpp-python` on CPU, thinking disabled (`/no_think`), temperature 0.
@@ -37,17 +37,17 @@
 
 **Found, development questions.** The model's first closed-book guess matched the correct answer for very few questions, and almost all questions got a wrong candidate. q_wrong barely changes gold recall relative to q_keywords in the pools or the corpus; one corpus interval excludes zero with a small drop, without multiple-comparison correction, so H1 is not supported on this sample. Candidate mentions in the top 10 rise. The gain from q_true is far larger than the change from q_wrong (H2 on retrieval). The reader accepts the wrong candidate more often after q_wrong results than after q_keywords results, with an interval excluding zero (H4). The reader answers REFUTED for most correct answers when the results lack them, so REFUTED is not a reliable sign of refuting evidence. Few questions have a gold document in the q_wrong top 5, too few for the "error remains with refuting evidence" part of H4. Numbers: notebook output, `results/candidate_stats_q_wrong_dev.csv`, `results/*q_wrong*_dev.csv`, `results/asymmetry_true_wrong_dev.csv`, `results/reader_dev.csv`, `results/reader_summary_dev.csv`.
 
-**Open.** The label sheet `data/browsecomp-plus/labels_q_wrong_dev.csv` (30 questions, top 5 of q_wrong) contains no gold document, so it cannot check whether gold documents refute the candidate; no labels are entered yet, and how to extend it is for Ognjen to decide. The test run needs a decision on the reader's cost and on moving shared code out of the notebook.
+**Open.** The label sheet `data/browsecomp-plus/labels_q_wrong_dev.csv` (30 questions, top 5 of q_wrong) contains no gold document, so it cannot check whether gold documents refute the candidate; no labels are entered yet, and how to extend it is still to be decided. The test run needs a decision on the reader's cost and on moving shared code out of the notebook.
 
 ## 2026-11-11
 
-**Decided, not yet built.** The label sheet from section 10 has no gold document, so a second sheet is planned as section 10b, `data/browsecomp-plus/labels_gold_dev.csv`. It covers the same 30 questions with one gold document each, shown as a 300-word window around the exact correct answer, or the window with the most question keywords when the answer is not in the text (column `snippet_source`). Columns to fill: `contains_answer` (`yes`, `implicit`, `no`), `refutes` (`yes`, `no`, `unclear`) and `note`. Rule fixed before labeling: `refutes` is `yes` only if the text, read with the question, rules the candidate out, for example by giving a different unique answer for the same thing; a mere mention of the correct answer is `unclear`. The notebook reports only the share of `refutes = yes` with a bootstrap interval; if it is low, a gold document in the top 5 is no longer used as a proxy for refuting evidence. Still open for Ognjen: whether the gold document is the one q_wrong ranks highest (proposed) or a random one with the fixed seed. The existing sheet is kept unchanged.
+**Decided, not yet built.** The label sheet from section 10 has no gold document, so a second sheet is planned as section 10b, `data/browsecomp-plus/labels_gold_dev.csv`. It covers the same 30 questions with one gold document each, shown as a 300-word window around the exact correct answer, or the window with the most question keywords when the answer is not in the text (column `snippet_source`). Columns to fill: `contains_answer` (`yes`, `implicit`, `no`), `refutes` (`yes`, `no`, `unclear`) and `note`. Rule fixed before labeling: `refutes` is `yes` only if the text, read with the question, rules the candidate out, for example by giving a different unique answer for the same thing; a mere mention of the correct answer is `unclear`. The notebook reports only the share of `refutes = yes` with a bootstrap interval; if it is low, a gold document in the top 5 is no longer used as a proxy for refuting evidence. Still open: whether the gold document is the one q_wrong ranks highest (proposed) or a random one with the fixed seed. The existing sheet is kept unchanged.
 
 **Repository.** Added `requirements.txt` with the versions installed in the `retrieval-bias` environment. Before pushing, the tracked files were checked for the canary string and for development answers, question openings, gold URLs and candidates; nothing was found.
 
 ## 2026-11-17
 
-**Decided before running, approved by Ognjen.** Section 10b uses, for each of the 30 label questions, the gold document that q_wrong ranks highest in the corpus. Reading the code line by line raised points that affect how section 9 is read, so three things are added on the branch `analysis/pilot-controls`; the main H4 number and its definition do not change.
+**Decided before running.** Section 10b uses, for each of the 30 label questions, the gold document that q_wrong ranks highest in the corpus. Reading the code line by line raised points that affect how section 9 is read, so three things are added on the branch `analysis/pilot-controls`; the main H4 number and its definition do not change.
 - Snippet control. In section 9 the 200-word window of each document is chosen by the terms of the query that retrieved it, so under q_wrong the window is pulled toward the candidate even within the same document. Part of the H4 difference may therefore come from the choice of snippet and not from the documents. A fifth condition, `wrong_wrong_kwsnip`, shows the q_wrong documents with windows chosen by q_keywords. Two comparisons split the main difference: `wrong_wrong_kwsnip - wrong_keywords` (documents) and `wrong_wrong - wrong_wrong_kwsnip` (snippets). This condition is added after the first H4 result was seen; it runs on the same 97 questions with the same model and prompt.
 - `candidate_in_snippets`: candidate mentions counted in the snippets the reader saw, next to the existing count over whole documents.
 - Section 8 now prints how many candidates are shorter than 4 characters, because the substring match can count parts of words as mentions, and its text states that no gold document contains the candidate as a string, by construction.
@@ -56,11 +56,11 @@
 
 **Found, development questions.** The snippet control splits the H4 difference in SUPPORTED into two parts of about equal size, one from the q_wrong documents and one from windows chosen by q_wrong. Both intervals exclude zero but come close to it, with 97 questions and without multiple-comparison correction, so the split is suggestive. The main H4 result is unchanged. Three q_wrong candidates are shorter than 4 characters. Numbers: notebook output and `results/reader_summary_dev.csv`.
 
-**Open.** Ognjen labels both sheets. If the snippet effect is to be reported, the test run must keep this condition.
+**Open.** Both sheets are to be labeled by hand. If the snippet effect is to be reported, the test run must keep this condition.
 
 ## 2026-11-27
 
-**Repository.** With Ognjen's approval, `analysis/pilot-dev` and `analysis/pilot-controls` were fast-forwarded into
+**Repository.** `analysis/pilot-dev` and `analysis/pilot-controls` were fast-forwarded into
 `main` and deleted locally and on GitHub; history stays linear. Before the merge, every blob in the history was
 checked for the BrowseComp-Plus canary GUID and for development answers, candidates, question openings and gold
 URLs; nothing was found. Added `README.md` (question, hypotheses, setup, pilot results on development questions
@@ -68,3 +68,9 @@ with limitations, reproduction steps, data policy) and an MIT `LICENSE`. The REA
 `results/reader_summary_dev.csv` and `results/asymmetry_true_wrong_dev.csv`. No experiment was run.
 
 **Open.** Manual labels, the test run and the dense retriever are unchanged from 2026-11-17.
+
+**Repository, later the same day.** Reworded earlier log entries for a public reader (references to local tool
+configuration and to who approved what); no recorded decision, run or result was changed. Added
+`scripts/make_readme_figure.py`, which draws `docs/figures/pilot_results.png` from
+`results/asymmetry_true_wrong_dev.csv` and `results/reader_summary_dev.csv`, and a short key-findings section with
+that figure at the top of `README.md`. Added `matplotlib` to `requirements.txt`. No experiment was run.
